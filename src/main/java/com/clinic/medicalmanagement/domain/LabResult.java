@@ -15,7 +15,7 @@ public class LabResult {
     private LabOrder labOrder;
     @Column(nullable = false, length = 100)
     private String examName;
-    @Column(nullable = false, length = 100)
+    @Column(name = "result_value", nullable = false, length = 100)
     private String value;
     @Column(nullable = false, length = 100)
     private String referenceRange;
