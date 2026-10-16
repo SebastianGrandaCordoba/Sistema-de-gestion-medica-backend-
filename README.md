@@ -49,8 +49,20 @@ Las rutas requeridas por el taller están disponibles bajo `/api/clinica`:
 También se incluyen rutas complementarias para consultar perfil, registrar antecedentes y cancelar citas:
 
 - `GET /api/clinica/paciente/{patientId}`
+- `GET /api/clinica/paciente?documento=1085123456` — busca al paciente por documento; el portal lo usa para iniciar sesión.
 - `POST /api/clinica/historia`
 - `DELETE /api/clinica/cita/{appointmentId}`
+- `GET /api/clinica/disponibilidad?medicoId=1&fecha=2026-10-20` — franjas libres de un médico en una fecha.
+
+`POST /api/clinica/cita` acepta dos campos opcionales, `doctorId` y `time`, para que el paciente
+elija médico y horario. Si se omiten, la cita se asigna en la primera franja libre de la
+especialidad. `GET /api/clinica/historia/{pacienteId}` devuelve `upcomingAppointments` además de
+`pastAppointments`, de modo que el portal arma el tablero con una sola llamada a la fachada.
+
+## CORS
+
+`CorsConfig` habilita `/api/**` para `http://localhost:*` y `https://*.vercel.app`. La propiedad
+`clinic.cors.allowed-origin-patterns` permite sobrescribir la lista por entorno.
 
 ### Ejemplos de cuerpos JSON
 

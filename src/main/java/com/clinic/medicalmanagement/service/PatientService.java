@@ -45,6 +45,14 @@ public class PatientService {
     @Transactional(readOnly = true)
     public PatientResponse getProfile(Long patientId) { return toResponse(getPatient(patientId)); }
 
+    @Transactional(readOnly = true)
+    public PatientResponse getProfileByDocument(String documentNumber) {
+        return patientRepository.findByDocumentNumberIgnoreCase(documentNumber.trim())
+                .map(this::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No patient was found with document number " + documentNumber));
+    }
+
     public PatientResponse toResponse(Patient patient) {
         return new PatientResponse(patient.getId(), patient.getDocumentNumber(), patient.getFullName(),
                 patient.getEmail(), patient.getPhone(), patient.getBirthDate(), patient.getGender());

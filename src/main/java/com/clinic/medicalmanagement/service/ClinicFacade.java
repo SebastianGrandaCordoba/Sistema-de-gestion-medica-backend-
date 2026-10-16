@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,18 +23,26 @@ public class ClinicFacade {
 
     @Transactional
     public AppointmentResponse bookAppointment(Long patientId, String specialty, LocalDate date) {
+        return bookAppointment(patientId, specialty, date, null, null);
+    }
+
+    @Transactional
+    public AppointmentResponse bookAppointment(Long patientId, String specialty, LocalDate date,
+                                               Long doctorId, LocalTime time) {
         patientService.getPatient(patientId);
-        return appointmentService.book(patientId, specialty, date);
+        return appointmentService.book(patientId, specialty, date, doctorId, time);
     }
 
     @Transactional(readOnly = true)
     public CompleteHistoryResponse viewCompleteHistory(Long patientId) {
         PatientResponse patient = patientService.getProfile(patientId);
-        List<AppointmentResponse> appointments = appointmentService.getPastAppointments(patientId);
+        List<AppointmentResponse> upcomingAppointments = appointmentService.getUpcomingAppointments(patientId);
+        List<AppointmentResponse> pastAppointments = appointmentService.getPastAppointments(patientId);
         List<MedicalRecordResponse> records = medicalRecordService.getRecords(patientId);
         List<PrescriptionResponse> prescriptions = prescriptionService.getByPatient(patientId);
         List<LabOrderResponse> labOrders = laboratoryService.getByPatient(patientId);
-        return new CompleteHistoryResponse(patient, appointments, records, prescriptions, labOrders);
+        return new CompleteHistoryResponse(patient, upcomingAppointments, pastAppointments,
+                records, prescriptions, labOrders);
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public final class ApiDtos {
@@ -22,12 +23,17 @@ public final class ApiDtos {
 
     public record AppointmentRequest(@NotNull @Positive Long patientId,
                                      @NotBlank @Size(max = 80) String specialty,
-                                     @NotNull @FutureOrPresent LocalDate date) {}
+                                     @NotNull @FutureOrPresent LocalDate date,
+                                     @Positive Long doctorId,
+                                     LocalTime time) {}
 
     public record AppointmentResponse(Long id, Long patientId, String doctorName, String specialty,
                                       LocalDateTime scheduledAt, String status, String reminder) {}
 
     public record DoctorResponse(Long id, String fullName, String specialty) {}
+
+    public record AvailabilityResponse(Long doctorId, String doctorName, String specialty,
+                                       LocalDate date, List<LocalTime> availableSlots) {}
 
     public record MedicalRecordRequest(@NotNull @Positive Long patientId,
                                        @NotBlank @Size(max = 500) String consultation,
@@ -52,6 +58,7 @@ public final class ApiDtos {
                                    List<LabResultResponse> results) {}
 
     public record CompleteHistoryResponse(PatientResponse patient,
+                                          List<AppointmentResponse> upcomingAppointments,
                                           List<AppointmentResponse> pastAppointments,
                                           List<MedicalRecordResponse> medicalRecords,
                                           List<PrescriptionResponse> prescriptions,
