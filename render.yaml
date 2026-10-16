@@ -9,9 +9,29 @@ services:
         value: prod
       - key: PORT
         value: 10000
-      - key: DATABASE_URL
-        sync: false
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: medical-management-db
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: medical-management-db
+          property: port
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: medical-management-db
+          property: database
       - key: DATABASE_USERNAME
-        sync: false
+        fromDatabase:
+          name: medical-management-db
+          property: user
       - key: DATABASE_PASSWORD
-        sync: false
+        fromDatabase:
+          name: medical-management-db
+          property: password
+
+databases:
+  - name: medical-management-db
+    databaseName: clinic
+    user: clinic_user
+    plan: free

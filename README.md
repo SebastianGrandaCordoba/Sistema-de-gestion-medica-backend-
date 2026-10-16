@@ -19,11 +19,13 @@ La aplicación escucha en `http://localhost:8080`. H2 se crea en memoria al inic
 
 Las entidades JPA y los repositorios Spring Data JPA persisten pacientes, médicos, citas, historias clínicas, prescripciones y órdenes/resultados de laboratorio. Por defecto se usa H2 en memoria, adecuada para desarrollo y demostración.
 
-Para ejecutar con PostgreSQL, activa el perfil `prod` y define `DATABASE_URL` como una URL JDBC (`jdbc:postgresql://host:5432/database`), además de `DATABASE_USERNAME` y `DATABASE_PASSWORD`. Por ejemplo:
+Para ejecutar con PostgreSQL, activa el perfil `prod` y define `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USERNAME` y `DATABASE_PASSWORD`. Por ejemplo:
 
 ```powershell
 $env:SPRING_PROFILES_ACTIVE = "prod"
-$env:DATABASE_URL = "jdbc:postgresql://localhost:5432/clinic"
+$env:DATABASE_HOST = "localhost"
+$env:DATABASE_PORT = "5432"
+$env:DATABASE_NAME = "clinic"
 $env:DATABASE_USERNAME = "clinic"
 $env:DATABASE_PASSWORD = "change-me"
 mvn spring-boot:run
@@ -110,8 +112,8 @@ Todos los métodos de `ClinicFacade` llaman dos o más subsistemas. `viewComplet
 
 ## Despliegue sugerido: Render
 
-El repositorio incluye `Dockerfile` y `render.yaml`. En Render crea un servicio Web usando el repositorio; el blueprint usa Docker, enlaza el proceso al puerto de entorno `PORT` (Render usa `10000` por defecto) y publica `/actuator/health` como health check.
+El repositorio incluye `Dockerfile` y `render.yaml`. En Render crea un Blueprint usando el repositorio; el blueprint crea el servicio web y una base PostgreSQL gratuita, enlaza el proceso al puerto de entorno `PORT` (Render usa `10000` por defecto) y publica `/actuator/health` como health check.
 
-Para conservar registros entre reinicios, crea una base de datos PostgreSQL administrada y define `DATABASE_URL` con su URL JDBC, junto con `DATABASE_USERNAME` y `DATABASE_PASSWORD`. H2 en memoria es apropiada solo para demostración: el contenido desaparece al reiniciar o escalar a varias instancias. Un servicio gratuito puede suspenderse cuando no recibe tráfico; el primer request tras la suspensión puede tardar en responder.
+La base PostgreSQL gratuita creada por el Blueprint conserva registros entre reinicios, pero Render la elimina después de 30 días; es solo para demostración. Para conservar datos por más tiempo, cambia a un plan PostgreSQL de pago antes de la fecha de vencimiento. H2 en memoria es apropiada solo para ejecución local: el contenido desaparece al reiniciar o escalar a varias instancias. Un servicio gratuito puede suspenderse cuando no recibe tráfico; el primer request tras la suspensión puede tardar en responder.
 
 Render es la opción sugerida para esta primera publicación porque conecta directamente el repositorio GitHub, construye el Dockerfile y ofrece un Web Service con URL pública y health check. Railway también es compatible, aunque conviene elegir un proveedor de PostgreSQL persistente en cualquiera de las dos plataformas antes de usar datos que deban sobrevivir reinicios.
